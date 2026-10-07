@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+artifacts/
+*.local.toml
+
+# Credentials, private workload definitions, and local measurement output
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+charriot.toml

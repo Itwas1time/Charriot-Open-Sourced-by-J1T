@@ -1,0 +1,39 @@
+# Charriot knows nothing about the programs it runs. A workload is a command,
+# a role, and some hints. Swap the commands for anything you like.
+
+[charriot]
+# Physical cores left unpinned for the desktop, compositor, and the rest of
+# the system. Raise this if the machine feels sluggish while both run.
+reserve_cores = 1
+
+# The latency workload is the reason to partition: it gets whole physical
+# cores of its own, so nothing else can preempt its frame loop.
+[[workload]]
+name = "game"
+role = "latency"
+command = ["python3", "main.py"]
+cwd = "/path/to/your-game"
+cores = 4
+gpu = "prefer"
+needs = "engine"
+endpoint_env = "GAME_INFERENCE_URL"
+
+# The throughput workload gets whatever is left and is told how much machine
+# it may use. How to use it is its own decision.
+[[workload]]
+name = "engine"
+role = "throughput"
+command = ["python3", "-m", "your_engine", "serve"]
+cwd = "/path/to/your-engine"
+gpu = "auto"
+memory_max = "12G"
+
+# Charriot writes its physical-core budget into this variable. Point it at
+# whatever your program reads. Programs that autotune should treat it as a
+# ceiling, not an instruction.
+threads_env = "ENGINE_THREADS"
+
+# Started and proven healthy before anything that needs it.
+provides_endpoint = "http://127.0.0.1:11435"
+ready_url = "http://127.0.0.1:11435/health"
+ready_timeout = 120
